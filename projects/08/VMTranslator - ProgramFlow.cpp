@@ -27,7 +27,12 @@ class Parser {
 			while (!isalpha(curr_command[0]) && !inp.eof()) {
 				std::getline(inp, curr_command);
 			} 
-			//std::cout << curr_command << std::endl;
+			//remove in-line comments
+			curr_command = curr_command.substr(0, curr_command.find("/")-1);
+			//remove trailing whitespace
+		    while (curr_command[curr_command.length()-1] == ' ') { 
+				curr_command.erase(curr_command.length()-1, curr_command.length()); 
+			}
 		}
 			
 		std::string commandType() {
@@ -35,9 +40,13 @@ class Parser {
 			//TODO: IMPLEMENT OTHER COMMAND TYPES
 			if 		(command == "push") 	return "C_PUSH";
 			else if (command == "pop") 		return "C_POP";
+			else if (command == "label") 	return "C_LABEL";
+			else if (command == "if-goto") 	return "C_IF";
+			else if (command == "goto") 	return "C_GOTO";
 			else 							return "C_ARITHMETIC";
 		}
 			
+		//returns 1st argument in curr_command
 		std::string arg1() {
 			if (commandType() == "C_ARITHMETIC") return curr_command;
 			else {
@@ -45,6 +54,7 @@ class Parser {
 			}
 		}
 		
+		//returns 2nd argument in curr_command
 		//call if (obj_parser.commandType() == "C_PUSH" || obj_parser.commandType() == "C_POP")
 		int arg2() {
 			return stoi(curr_command.substr(curr_command.rfind(" ")+1, std::string::npos));
@@ -135,7 +145,6 @@ class CodeWriter {
 				out << "@SP" 		<< std::endl;
 				out << "M=M+1" 		<< std::endl;
 			}
-			//	todo: implement pointer
 			else if (command == "C_POP") {
 				if (seg == "pointer") {
 					if (index == 0) out << "@THIS" << std::endl;
@@ -179,15 +188,21 @@ class CodeWriter {
 		}
 		
 		void writeLabel(std::string s) {
-			//assmbly code for label
+			out << "(" << s << ")" << std::endl;
 		}
 		
 		void writeGoto(std::string s) {
-			//assmbly code for goto
+			out << "@" << s	<< std::endl;
+			out << "0;JMP" 	<< std::endl;
 		}
 		
 		void writeIf(std::string s) {
-			//assmbly code for if-goto
+			out << "@SP" 	<< std::endl;
+			out << "M=M-1" 	<< std::endl;
+			out << "A=M" 	<< std::endl;
+			out << "D=M" 	<< std::endl;
+			out << "@" << s	<< std::endl;
+			out << "D;JGT" 	<< std::endl;
 		}
 		
 		void writeFunction(std::string functionName, int numVars) {
@@ -205,8 +220,8 @@ class CodeWriter {
 
 int main() {	
 	//input and output files
-	std::string inpFile = "MemoryAccess/StaticTest/StaticTest.vm";
-	std::string outFile = "MemoryAccess/StaticTest/StaticTest.asm";
+	std::string inpFile = "ProgramFlow/FibonacciSeries/FibonacciSeries.vm";
+	std::string outFile = "ProgramFlow/FibonacciSeries/FibonacciSeries.asm";
 	
 	//names of segments in HACK platform
 	stringmap seg_name ({{"local",		"LCL"},
@@ -223,6 +238,9 @@ int main() {
 		obj_parser.advance();
 		if 		(obj_parser.commandType() == "C_ARITHMETIC") 									obj_cw.writeArithmetic(obj_parser.arg1());
 		else if (obj_parser.commandType() == "C_PUSH" || obj_parser.commandType() == "C_POP") 	obj_cw.writePushPop(obj_parser.commandType(), obj_parser.arg1(), obj_parser.arg2(), seg_name);
+		else if (obj_parser.commandType() == "C_LABEL") 										obj_cw.writeLabel(obj_parser.arg1());
+		else if (obj_parser.commandType() == "C_IF") 											obj_cw.writeIf(obj_parser.arg1());
+		else if (obj_parser.commandType() == "C_GOTO") 											obj_cw.writeGoto(obj_parser.arg1());
 	}
 	
 	obj_cw.close();
