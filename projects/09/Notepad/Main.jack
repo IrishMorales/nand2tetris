@@ -1,0 +1,11 @@
+/** Simple notepad application */
+
+class Main {
+    function void main() {
+        var Notepad note;
+        let note = Notepad.new();
+        do note.run();
+        do note.dispose();
+        return;
+    }
+}

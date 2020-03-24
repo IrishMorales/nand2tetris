@@ -1,0 +1,46 @@
+/** 
+ * Notepad that gets and prints user input,
+ * and allows user to press backspace to delete.
+ */
+
+class Notepad {
+    field String name;
+
+    /** Create new Notepad. x/
+    constructor Notepad new() {
+        let name = String.new(12);
+        do Output.printString("NAME OF NOTEPAD: ");
+        return this;
+    }
+
+    method void run() {
+        var char key; //current key being pressed
+        
+        //while no key being pressed
+        while (key = 0) {
+            let key = Keyboard.keyPressed();
+        }
+
+        //while a key is being pressed
+        while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+
+            //backspace
+            if (key = 129)) {
+                do Output.backSpace();
+            }
+            //print current key
+            else {
+                do Output.printChar(key);
+            }
+        }
+
+        return;
+    }
+
+    /** Dispose Notepad. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
