@@ -11,8 +11,8 @@ Contents:
 * Project 07: Basic VM translator  
 * Project 08: Full VM translator  
 * Project 09: Jack language programs  
+* Project 10: Basic Jack Compiler  
   
 Unfinished:  
-* Project 10: Basic Jack Compiler  
 * Project 11: Full Jack Compiler  
 * Project 12: Jack OS  
